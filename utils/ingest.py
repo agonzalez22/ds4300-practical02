@@ -23,10 +23,15 @@ def ingest_pdf():
 
     return text
 
+def chunk(text, size: int = 100, overlap_size: int = 0):
+    """ choose a chunk, breaks up text into chunks and returns as 2D list """
+    pass
+
 
 def process_pdf(text):
     """process text"""
     #embedding = get_embedding(text, 'all-MiniLM-L6-v2')  # vectorize
+    # tokenize and clean 
     embedding = get_embedding(text, sentence_transformer=False)
     # TODO: generate 5 different embeddings per each document, just store them as attr in the db
     return embedding # testing
@@ -34,6 +39,8 @@ def process_pdf(text):
 
 def remove_stop(text):
     pass
+
+
 
 
 print(len(process_pdf(ingest_pdf())))
