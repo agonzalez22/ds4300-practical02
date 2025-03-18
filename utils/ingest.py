@@ -31,8 +31,7 @@ def ingest_pdf():
 
 def chunk(text, size: int = 100, overlap_size: int = 0):
     """ choose a chunk, breaks up text into chunks and returns a list of chunks"""
-     
-    pass
+
 
 def process_pdf(text):
     """process text"""
