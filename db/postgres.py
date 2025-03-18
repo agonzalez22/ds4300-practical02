@@ -23,20 +23,28 @@ def connect():
     return conn
 
 
-def add_text_to_postgres_db(text: str, embedding: np.array, model: str):
-    """transaction to create new instance in table"""
-    # find the embedding length, and size
-    embed_size = len(embedding)
-    size_kb = sys.getsizeof(embedding.tobytes()) / 1024
+def add_text_to_postgres_db(pdf_title:str, text: str, overlap_size: int,  embedding: np.array, model: str, start: int, end: int):
+    """transaction to create new instance in table
+    
+        id SERIAL primary key, 
+        text TEXT, 
+        embedding vector(768), 
+        model TEXT, 
+        chunk_size INT, 
+        overlap_size INT, 
+        pdf_title TEXT, 
+        start_page INT, 
+        end_page INT, 
+    """
     conn = connect()
     cur = conn.cursor()
 
     cur.execute(
         """
-    INSERT INTO notes (text, embedding, model, embedding_size, size_kb)
-    VALUES (%s, %s, %s, %s, %s)
+    INSERT INTO notes (text, embedding, model, chunk_size, overlap_size, pdf_title, start_page, end_page)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
 """,
-        (text, embedding, model, embed_size, size_kb),
+        (text, embedding, model, len(text), overlap_size, pdf_title, start, end),
     )
 
     conn.commit()

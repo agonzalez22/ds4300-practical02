@@ -36,4 +36,4 @@ def remove_stop(text):
     pass
 
 
-print(process_pdf(ingest_pdf()))
+print(len(process_pdf(ingest_pdf())))
