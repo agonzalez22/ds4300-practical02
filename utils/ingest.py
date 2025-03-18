@@ -44,7 +44,7 @@ def chunk(tokens: list, chunk_size: int, overlap_size: int) -> list[str]:
     return chunks 
 
 
-def process_pdf(text: str, chunk_size: int = 200, overlap_size: int = 0, model: str = "nomic-embed-text", sentence_transformer: bool = True) -> None:
+def process_pdf(text: str, chunk_size: int = 200, overlap_size: int = 0, model: str = "nomic-embed-text", sentence_transformer: bool = True) -> list:
     """ process text. 
         Adjust the chunksize and overlap :))  for yeah
     """
@@ -58,9 +58,16 @@ def process_pdf(text: str, chunk_size: int = 200, overlap_size: int = 0, model: 
     
     chunks = chunk(tokens, chunk_size, overlap_size) 
 
-    embedding = get_embedding(text, model, sentence_transformer) # vectorize 
-    # TODO: generate 5 different embeddings per each document, just store them as attr in the db
-    return embedding # testing
+    embeddings = []
+    for chunk in chunks: 
+        embeddings.append(get_embedding(chunk, model, sentence_transformer)) # vectorize & append
+        
+    # TODO: generate 3 different embeddings per each document, just store them as attr in the db
+    return embeddings # testing
+
+def add_to_db(add_func, pdf_title:str, text: str, overlap_size: int,  embedding: list, model: str, start: int, end: int): 
+    for embed in embedding: 
+        add_func(pdf_title, text, overlap_size, embed, model, start, end)
 
 
 def remove_stop(text):
