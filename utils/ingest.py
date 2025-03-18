@@ -29,24 +29,36 @@ def ingest_pdf():
         process_pdf(text)
 
 
-def chunk(text, size: int = 100, overlap_size: int = 0):
+def chunk(tokens: list, chunk_size: int, overlap_size: int) -> list[str]:
     """ choose a chunk, breaks up text into chunks and returns a list of chunks"""
+    if len(tokens) <= chunk_size:
+        return " ".join(tokens)
+
+    start, end = 0, chunk_size
+    chunks = []
+    while end < len(text):
+        chunks.append(" ".join(tokens[start:end]))
+        start = end - overlap_size 
+        end = start + chunk_size
+
+    return chunks 
 
 
-def process_pdf(text):
-    """process text"""
+def process_pdf(text: str, chunk_size: int = 200, overlap_size: int = 0, model: str = "nomic-embed-text", sentence_transformer: bool = True) -> None:
+    """ process text. 
+        Adjust the chunksize and overlap :))  for yeah
+    """
     nltk.download('punkt_tab')
     stop_words = set(stopwords.words('english'))
 
-    # clean
+    # clean & 
     text = text.lower()
-    toks = word_tokenize(text)
-    toks = [tok for tok in toks if tok not in stopwords]
-    print(toks)
+    tokens = word_tokenize(text)
+    tokens = [tok for tok in tokens if tok not in stopwords] # lol
+    
+    chunks = chunk(tokens, chunk_size, overlap_size) 
 
-    # tokenize 
-    #embedding = get_embedding(text, 'all-MiniLM-L6-v2')  # vectorize
-    embedding = get_embedding(text, sentence_transformer=False)
+    embedding = get_embedding(text, model, sentence_transformer) # vectorize 
     # TODO: generate 5 different embeddings per each document, just store them as attr in the db
     return embedding # testing
 

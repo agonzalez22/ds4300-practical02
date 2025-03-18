@@ -4,7 +4,7 @@ from sentence_transformers import SentenceTransformer
 
 
 def get_embedding(
-    text: str, model: str = "nomic-embed-text", sentence_transformer=True
+    text: str, model: str, sentence_transformer: bool
 ) -> list:
     """Generate an embedding using nomic-embed-text"""
     if sentence_transformer:
