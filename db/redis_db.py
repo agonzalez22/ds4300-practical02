@@ -2,6 +2,8 @@ import ollama
 import redis
 import numpy as np
 from redis.commands.search.query import Query
+from llm import get_embedding
+
 
 # Initialize Redis connection
 redis_client = redis.Redis(host="localhost", port=6379, db=0)
@@ -29,11 +31,6 @@ def create_hnsw_index():
     print("Index created successfully.")
 
 
-def get_embedding(text: str, model: str = "nomic-embed-text") -> list:
-    
-    response = ollama.embeddings(model=model, prompt=text)
-    return response["embedding"]
-
 
 def store_embedding(doc_id: str, text: str, embedding: list, model: str, chunksize: int, overlap: int, PDF: str, start:int, end:int):
     key = f"{DOC_PREFIX}{doc_id}"
@@ -52,35 +49,35 @@ def store_embedding(doc_id: str, text: str, embedding: list, model: str, chunksi
             "end": end
         },
     )
-    print(f"Stored embedding for: {text}")
+    # print(f"Stored embedding for: {text}")
 
-    texts = [
-        "Redis is an in-memory key-value database.",
-        "Ollama provides efficient LLM inference on local machines.",
-        "Vector databases store high-dimensional embeddings for similarity search.",
-        "HNSW indexing enables fast vector search in Redis.",
-        "Ollama can generate embeddings for RAG applications.",
-    ]
+    # texts = [
+    #     "Redis is an in-memory key-value database.",
+    #     "Ollama provides efficient LLM inference on local machines.",
+    #     "Vector databases store high-dimensional embeddings for similarity search.",
+    #     "HNSW indexing enables fast vector search in Redis.",
+    #     "Ollama can generate embeddings for RAG applications.",
+    # ]
 
 
 
-    for i, text in enumerate(texts):
-        embedding = get_embedding(text)
-        store_embedding(str(i), text, embedding)
+    # for i, text in enumerate(texts):
+    #     embedding = get_embedding(text)
+    #     store_embedding(str(i), text, embedding)
 
-    query_text = "Efficient search in vector databases"
+    # query_text = "Efficient search in vector databases"
 
-    q = (
-        Query("*=>[KNN 3 @embedding $vec AS vector_distance]")
-        .sort_by("vector_distance")
-        .return_fields("id", "vector_distance")
-        .dialect(2)
-    )
-    query_text = "Efficient search in vector databases"
-    embedding = get_embedding(query_text)
-    res = redis_client.ft(INDEX_NAME).search(
-        q, query_params={"vec": np.array(embedding, dtype=np.float32).tobytes()}
-    )
-    print(res.docs)
+    # q = (
+    #     Query("*=>[KNN 3 @embedding $vec AS vector_distance]")
+    #     .sort_by("vector_distance")
+    #     .return_fields("id", "vector_distance")
+    #     .dialect(2)
+    # )
+    # query_text = "Efficient search in vector databases"
+    # embedding = get_embedding(query_text)
+    # res = redis_client.ft(INDEX_NAME).search(
+    #     q, query_params={"vec": np.array(embedding, dtype=np.float32).tobytes()}
+    # )
+    # print(res.docs)
 
 store_embedding()
