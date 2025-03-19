@@ -13,11 +13,10 @@ from nltk.corpus import stopwords
 load_dotenv()
 
 
-def ingest_pdf():
+def ingest_pdf(dct: dict):
     """ingests the pdf text"""
     pdf_path = os.getenv("PDF_PATH")
 
-    
     for f in os.listdir(pdf_path):
         text = ""
         doc = fitz.open(
@@ -26,8 +25,10 @@ def ingest_pdf():
         for page_num in range(len(doc)):
             page = doc.load_page(page_num)
             text += page.get_text("text")
-        process_pdf(text)
+        embeddings, chunks = process_pdf(text = text, *dct)
+        add_to_db(dct["model"])
 
+    return embeddings, chunks
 
 def chunk(tokens: list, chunk_size: int, overlap_size: int) -> list[str]:
     """ choose a chunk, breaks up text into chunks and returns a list of chunks"""
@@ -36,7 +37,7 @@ def chunk(tokens: list, chunk_size: int, overlap_size: int) -> list[str]:
 
     start, end = 0, chunk_size
     chunks = []
-    while end < len(text):
+    while end < len(tokens):
         chunks.append(" ".join(tokens[start:end]))
         start = end - overlap_size 
         end = start + chunk_size
@@ -53,8 +54,8 @@ def process_pdf(text: str, chunk_size: int = 200, overlap_size: int = 0, model: 
 
     # clean & 
     text = text.lower()
-    tokens = word_tokenize(text)
-    tokens = [tok for tok in tokens if tok not in stopwords] # lol
+    talk_tuah = word_tokenize(text)
+    tokens = [tauk for tauk in talk_tuah if tauk not in stopwords] # lol
     
     chunks = chunk(tokens, chunk_size, overlap_size) 
 
@@ -63,17 +64,17 @@ def process_pdf(text: str, chunk_size: int = 200, overlap_size: int = 0, model: 
         embeddings.append(get_embedding(chunk, model, sentence_transformer)) # vectorize & append
         
     # TODO: generate 3 different embeddings per each document, just store them as attr in the db
-    return embeddings # testing
+    return embeddings, chunks # testing
 
 def add_to_db(add_func, pdf_title:str, text: str, overlap_size: int,  embedding: list, model: str, start: int, end: int): 
     for embed in embedding: 
         add_func(pdf_title, text, overlap_size, embed, model, start, end)
 
+# postgres, redis, chroma
 
-def remove_stop(text):
+
+def main():
+    
     pass
 
-
-
-
-print(ingest_pdf())
+main()
