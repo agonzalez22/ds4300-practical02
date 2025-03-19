@@ -4,13 +4,13 @@ from sentence_transformers import SentenceTransformer
 
 
 def get_embedding(
-    text: str, model: str, sentence_transformer: bool
+    text: str, model: str
 ) -> list:
     """Generate an embedding using nomic-embed-text"""
-    if sentence_transformer:
+    try:
+        response = ollama.embeddings(model=model, prompt=text)
+        return np.array(response["embedding"])
+    except: # figure out which error to handle here (or leave it)
         model = SentenceTransformer(model)
         embeddings = np.array(model.encode(text))
         return embeddings
-    else:
-        response = ollama.embeddings(model=model, prompt=text)
-        return np.array(response["embedding"])
