@@ -14,3 +14,14 @@ def get_embedding(
         model = SentenceTransformer(model)
         embeddings = np.array(model.encode(text))
         return embeddings
+
+
+def get_llm_response(query:str, response:str, model="mistral"):
+    print("Generating LLM response...")
+    
+    prompt = f"Given the query: {query}, and the response: {response}, summarize the information."
+
+    response = ollama.chat(model=model, messages=[{'role': 'user', 'content': prompt}])
+
+    print("Response Generated!")
+    return response 

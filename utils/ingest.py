@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import nltk
 
 from .llm import get_embedding
-from db.postgres import add_text_to_postgres_db
+from db.postgres import add_text_to_postgres_db, query_postgres
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
@@ -73,11 +73,14 @@ class PDF:
     def ingest(self, func): 
         """ ingests the data into whichever db using whichever function necessary. If chroma, do something different. """
         for i in range(len(self.chunks)): 
-            func(self.title, self.chunks[i], self.overlap_size, self.embeddings[i], self.model)
+            func(f"{self.title}_{i}", self.chunks[i], self.overlap_size, self.embeddings[i], self.model)
 
 def main():
      # TODO: generate 3 different embeddings per each document, just store them as attr in the db
 
+
+
+    # TODO: PLZZZZZ UNCOMMENT THIS TO RUN PROPERLY ALEX thank u
     folder = os.getenv("PDF_PATH")
     print("Starting...")
     # run this to process all the text. 
