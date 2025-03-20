@@ -4,7 +4,8 @@ import fitz  # pdf reader thing
 from dotenv import load_dotenv
 import nltk
 
-from llm import get_embedding
+from .llm import get_embedding
+from db.postgres import add_text_to_postgres_db
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
@@ -72,7 +73,7 @@ class PDF:
     def ingest(self, func): 
         """ ingests the data into whichever db using whichever function necessary. If chroma, do something different. """
         for i in range(len(self.chunks)): 
-            func(self.pdf_title, self.chunks[i], self.overlap_size, self.embeddings[i], self.model, self.start[i], self.end[i])
+            func(self.title, self.chunks[i], self.overlap_size, self.embeddings[i], self.model)
 
 def main():
      # TODO: generate 3 different embeddings per each document, just store them as attr in the db
@@ -84,8 +85,7 @@ def main():
         curr_pdf = PDF(f"{folder}{f}")
         curr_pdf.process(chunk_size=200, overlap_size=0, model="nomic-embed-text")
         print(curr_pdf.embeddings)
-        print(len(curr_pdf.embeddings))
         # run this to send up to db 
-        # curr_pdf.ingest(func) # modify this to be whatever we want 
+        curr_pdf.ingest(add_text_to_postgres_db) # modify this to be whatever we want 
 
 main()

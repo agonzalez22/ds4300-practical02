@@ -11,19 +11,17 @@ load_dotenv()
 URL = os.environ.get("SUPABASE_URL")
 KEY = os.environ.get("SUPABASE_KEY")
 DB_NAME=os.environ.get("SUPABASE_NAME")
-supabase = create_client(url, key)
+supabase = create_client(URL, KEY)
 
-def add_text_to_postgres_db(pdf_title:str, text: str, overlap_size: int,  embedding: np.array, model: str, start: int, end: int):
+def add_text_to_postgres_db(pdf_title:str, text: str, overlap_size: int,  embedding: np.array, model: str):
     """ 
     """
     new = {"text": text, 
-           "embedding": embedding, 
+           "embedding": list(embedding), 
            "model": model, 
            "chunk_size": len(text), 
            "overlap_size": overlap_size, 
-           "pdf_title": pdf_title, 
-           "start_page": start, 
-           "end_page": end}
+           "pdf_title": pdf_title}
 
     response = (
     supabase.table(DB_NAME)
