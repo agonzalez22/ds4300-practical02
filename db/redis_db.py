@@ -1,9 +1,8 @@
+import numpy as np
 import ollama
 import redis
-import numpy as np
-from redis.commands.search.query import Query
 from llm import get_embedding
-
+from redis.commands.search.query import Query
 
 # Initialize Redis connection
 redis_client = redis.Redis(host="localhost", port=6379, db=0)
@@ -31,22 +30,29 @@ def create_hnsw_index():
     print("Index created successfully.")
 
 
-
-def store_embedding(doc_id: str, text: str, embedding: list, model: str, chunksize: int, overlap: int, PDF: str, start:int, end:int):
+def store_embedding(
+    doc_id: str,
+    text: str,
+    embedding: list,
+    model: str,
+    chunksize: int,
+    overlap: int,
+    PDF: str,
+    start: int,
+    end: int,
+):
     key = f"{DOC_PREFIX}{doc_id}"
     redis_client.hset(
         key,
         mapping={
             "text": text,
-            "embedding": np.array(
-                embedding, dtype=np.float32
-            ).tobytes(), 
+            "embedding": np.array(embedding, dtype=np.float32).tobytes(),
             "model": model,
             "chunksize": chunksize,
             "overlap": overlap,
-            "PDF": PDF, 
+            "PDF": PDF,
             "start": start,
-            "end": end
+            "end": end,
         },
     )
     # print(f"Stored embedding for: {text}")
@@ -58,8 +64,6 @@ def store_embedding(doc_id: str, text: str, embedding: list, model: str, chunksi
     #     "HNSW indexing enables fast vector search in Redis.",
     #     "Ollama can generate embeddings for RAG applications.",
     # ]
-
-
 
     # for i, text in enumerate(texts):
     #     embedding = get_embedding(text)
@@ -79,5 +83,6 @@ def store_embedding(doc_id: str, text: str, embedding: list, model: str, chunksi
     #     q, query_params={"vec": np.array(embedding, dtype=np.float32).tobytes()}
     # )
     # print(res.docs)
+
 
 store_embedding()
