@@ -1,7 +1,6 @@
 import numpy as np
 import ollama
 import redis
-from llm import get_embedding
 from redis.commands.search.query import Query
 
 # Initialize Redis connection
@@ -33,14 +32,10 @@ def create_hnsw_index():
 def store_embedding(
     doc_id: str,
     text: str,
-    embedding: list,
-    model: str,
-    chunksize: int,
     overlap: int,
-    PDF: str,
-    start: int,
-    end: int,
-):
+    embedding: list,
+    model: str,):
+
     key = f"{DOC_PREFIX}{doc_id}"
     redis_client.hset(
         key,
@@ -48,11 +43,7 @@ def store_embedding(
             "text": text,
             "embedding": np.array(embedding, dtype=np.float32).tobytes(),
             "model": model,
-            "chunksize": chunksize,
             "overlap": overlap,
-            "PDF": PDF,
-            "start": start,
-            "end": end,
         },
     )
     # print(f"Stored embedding for: {text}")
@@ -84,5 +75,25 @@ def store_embedding(
     # )
     # print(res.docs)
 
+def query_redis(embedding: list) -> dict:
+    """
+    """
 
-store_embedding()
+    q = (
+        Query("*=>[KNN 3 @embedding $vec AS vector_distance]")
+        .sort_by("vector_distance")
+        .return_fields("id", "vector_distance", "text")
+        .dialect(2)
+    )
+    
+    res = redis_client.ft(INDEX_NAME).search(
+        q, query_params = {"vec": np.array(embedding, dtype=np.float32).tobytes()}
+    )
+
+    print("query successful")
+
+    return(res.docs)
+
+
+
+

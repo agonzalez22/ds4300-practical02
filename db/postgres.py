@@ -2,7 +2,7 @@ import os
 import sys
 
 import numpy as np
-import psycopg2
+# import psycopg2
 import vecs
 from dotenv import load_dotenv
 from supabase import Client, create_client

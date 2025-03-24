@@ -5,8 +5,9 @@ import nltk
 from dotenv import load_dotenv
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from db.redis_db import *
 
-from db.postgres import add_text_to_postgres_db, query_postgres
+#from db.postgres import add_text_to_postgres_db
 
 from .llm import get_embedding
 
@@ -93,9 +94,23 @@ def main():
     for f in os.listdir(os.getenv("PDF_PATH")):
         curr_pdf = PDF(f"{folder}{f}")
         curr_pdf.process(chunk_size=200, overlap_size=0, model="nomic-embed-text")
-        print(curr_pdf.embeddings)
-        # run this to send up to db
-        curr_pdf.ingest(add_text_to_postgres_db)  # modify this to be whatever we want
+        print(curr_pdf.title)
+        #curr_pdf.ingest(add_text_to_postgres_db) 
 
 
-main()
+def redis():
+    folder = os.getenv("PDF_PATH")
+    print("starting redis...")
+
+    for f in os.listdir(os.getenv("PDF_PATH")):
+        curr_pdf = PDF(f"{folder}{f}")
+        curr_pdf.process(chunk_size=200, overlap_size = 0, model="nomic-embed-text")
+        curr_pdf.ingest(store_embedding)
+    
+
+    
+
+
+
+
+redis()

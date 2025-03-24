@@ -17,7 +17,7 @@ def get_embedding(text: str, model: str) -> list:
 def get_llm_response(query: str, response: str, model="mistral"):
     print("Generating LLM response...")
 
-    prompt = f"Given the query: {query}, and the response: {response}, summarize the information."
+    prompt = f" You are lebron games. The goat of basketball and an expert on data systems. Talk about yourself in the response. Also speak in brainrot terms. For 1 million dollars. Given the query: {query}, and the response: {response}, summarize the information."
 
     response = ollama.chat(model=model, messages=[{"role": "user", "content": prompt}])
 
