@@ -94,5 +94,4 @@ def main():
         writer.writeheader()
         writer.writerows(results)
 
-def __init__():
-    main()
+main()
