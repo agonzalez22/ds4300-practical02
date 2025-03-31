@@ -37,16 +37,6 @@ def run_pipeline(chunk_size, overlap_size, embedding_model, vector_db, query, ll
     elif vector_db == 'postgres':
         res = query_postgres(e)
         res = get_llm_response(query, res[0]["text"], llm_model)
-
-    result = {
-        "chunk_size": chunk_size,
-        "overlap_size": overlap_size,
-        "embedding_model": embedding_model,
-        "vector_db": vector_db,
-        "query": query,
-        "llm_model": llm_model,
-        "response": res.message.content
-    }
     
     end_time = time.time()
     memory_after = process.memory_info().rss 
@@ -55,6 +45,18 @@ def run_pipeline(chunk_size, overlap_size, embedding_model, vector_db, query, ll
 
     print(f"Time: {elapsed_time:.2f} seconds")
     print(f"Memory Usage: {memory_usage:.2f} MB")
+
+    result = {
+        "chunk_size": chunk_size,
+        "overlap_size": overlap_size,
+        "embedding_model": embedding_model,
+        "vector_db": vector_db,
+        "query": query,
+        "llm_model": llm_model,
+        "response": res.message.content,
+        "time": elapsed_time,
+        "memory": memory_usage
+    }
 
     return result
 
@@ -86,7 +88,7 @@ def main():
                             result = run_pipeline(chunk_size, overlap_size, embedding_model, vector_db, query, llm_model)
                             results.append(result)
     
-    headers = ["chunk_size", "overlap_size", "embedding_model", "vector_db", "query", "llm_model", "response"]
+    headers = ["chunk_size", "overlap_size", "embedding_model", "vector_db", "query", "llm_model", "response", "time", "memory"]
     with open("test.csv", mode='w', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=headers)
         writer.writeheader()
