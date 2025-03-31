@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from db.redis_db import *
+from db.chroma import *
 
 #from db.postgres import add_text_to_postgres_db
 
@@ -82,35 +83,3 @@ class PDF:
                 self.embeddings[i],
                 self.model,
             )
-
-
-def main():
-    # TODO: generate 3 different embeddings per each document, just store them as attr in the db
-
-    # TODO: PLZZZZZ UNCOMMENT THIS TO RUN PROPERLY ALEX thank u
-    folder = os.getenv("PDF_PATH")
-    print("Starting...")
-    # run this to process all the text.
-    for f in os.listdir(os.getenv("PDF_PATH")):
-        curr_pdf = PDF(f"{folder}{f}")
-        curr_pdf.process(chunk_size=200, overlap_size=0, model="nomic-embed-text")
-        print(curr_pdf.title)
-        #curr_pdf.ingest(add_text_to_postgres_db) 
-
-
-def redis():
-    folder = os.getenv("PDF_PATH")
-    print("starting redis...")
-
-    for f in os.listdir(os.getenv("PDF_PATH")):
-        curr_pdf = PDF(f"{folder}{f}")
-        curr_pdf.process(chunk_size=200, overlap_size = 0, model="nomic-embed-text")
-        curr_pdf.ingest(store_embedding)
-    
-
-    
-
-
-
-
-redis()
