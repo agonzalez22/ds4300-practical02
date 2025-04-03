@@ -6,8 +6,10 @@
 - re-run `pip install -r requirements.txt`
 
 ## How to Run: 
+run `python -m utils.ingest` to run the ingest pipeline
 
-### Postgres db 
-**To run locally, ensure you have Postgres installed locally and have established a local server. Repo for the db used in this project linked HERE.**
+run `python -m main` to run the queries 
+
+run `python -m test` to run the testing script 
 
 Set up .env variables, as provided in .env_example
